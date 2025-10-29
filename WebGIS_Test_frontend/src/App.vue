@@ -1,11 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
 var map
 var osm
-var dresdenMitte
 var baseMaps
 var overlayMaps 
 var layerControl
@@ -28,7 +27,7 @@ onMounted(async() => {
 
   
       // Daten vom Backend abrufen
-      const response = await fetch('http://127.0.0.1:5000/api/testmesswert');
+      const response = await fetch('http://192.168.178.24:5000/api/testmesswert');
       const data = await response.json();
 
       console.log(data)
