@@ -12,24 +12,43 @@ var layerControl
 
 
 
-onMounted(() => {
+onMounted(async() => {
+
+
+  map = L.map('map',{
+  center: [51.0557, 13.7274],
+  zoom: 14,
+  zoomControl: false, 
+  });
 
   osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap contributors'
-  });
-  dresdenMitte = L.marker([51.0557, 13.7274]);
+  }).addTo(map);
 
-map = L.map('map',{
-  center: [51.0557, 13.7274],
-  zoom: 12,
-  layers: [osm],
-  zoomControl: false, 
-});
+  
+      // Daten vom Backend abrufen
+      const response = await fetch('http://127.0.0.1:5000/api/testmesswert');
+      const data = await response.json();
+
+      console.log(data)
+
+
+      const markerGroup = L.layerGroup();
+
+    for (const item of data) {
+      L.marker([item.lat, item.lng])
+        .bindPopup(`<b>${item.name}</b><br>Tagesmaximaltemperatur: ${item.txk}`)
+        .addTo(markerGroup);
+    }
+
+  markerGroup.addTo(map);
+      
+  
 
 
 baseMaps = { "OSM": osm};
-overlayMaps ={ "Station Dresden": dresdenMitte};
+overlayMaps ={"Station Dresden Mitte": markerGroup};
 
 layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
 L.control.zoom({position: 'bottomright'}).addTo(map);
@@ -40,12 +59,12 @@ L.control.zoom({position: 'bottomright'}).addTo(map);
 </script>
 
 
-
-
 <template>
-  <div class="z-0 relative w-full h-full flex justify-center items-center bg-gray-800">
+  <div id="div1" class="bg-gray-800 h-screen w-screen">
     <!-- map -->
-    <div id="map" class="z-10 w-full h-full"></div>
+  <div id="div2">
+    <div id="map"></div>
+  </div>
   </div>
 </template>
 

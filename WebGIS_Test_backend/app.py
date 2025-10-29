@@ -1,8 +1,12 @@
 from flask import Flask, jsonify
 import psycopg2
 from configparser import ConfigParser
+from flask_cors import CORS
+
+
 
 app = Flask(__name__)
+CORS(app) 
 
 def db_connection():
     parser = ConfigParser()
@@ -32,8 +36,19 @@ def auslesen():
     cur.close()
     conn.close()
 
-    return jsonify(rows)
+
+    data = []
+    for row in rows:
+        data.append({
+            "name": row[0],
+            "lat": row[1],
+            "lng": row[2],
+            "txk": row[3]
+        })
+
+    return jsonify(data)
+
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
